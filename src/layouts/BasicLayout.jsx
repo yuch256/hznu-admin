@@ -1,16 +1,44 @@
 import React, { Component } from 'react';
 import { Layout, Menu, Icon } from 'antd';
-import { Route, Switch, Redirect, Link, NavLink } from 'react-router-dom';
+import { Route, Switch, Redirect, NavLink } from 'react-router-dom';
 import './BasicLayout.css';
 
 import Index from '../pages/Index';
-import AddArticle from '../pages/AddArticle.jsx';
+import AddArticle from '../pages/AddArticle';
 
-const { Sider } = Layout;
+const { Sider, Header } = Layout;
+const { SubMenu } = Menu;
+const menuData = [
+  {
+    link: '/',
+    iconType: 'home',
+    text: '功能介绍',
+  },
+  {
+    iconType: 'bars',
+    text: '文章列表',
+    subData: [
+      {
+        link: '/list/sdyw',
+        text: '师大要闻'
+      },
+      {
+        link: '/list/tzgg',
+        text: '通知公告'
+      }
+    ],
+  },
+  {
+    link: '/edit',
+    iconType: 'edit',
+    text: '添加文章',
+  }
+];
 
 export default class BasicLayout extends Component {
   state = {
     collapsed: false,
+    defaultSelectedKey: window.location.pathname,
   };
 
   toggle = () => {
@@ -18,33 +46,88 @@ export default class BasicLayout extends Component {
   };
 
   render() {
+    let { collapsed, defaultSelectedKey } = this.state;
+    const logo = () => {
+      return collapsed
+        ? <img className='logo-circle' src={require('../assets/logo/logo.svg')} alt='logo' />
+        : <img className='logo-all' src={require('../assets/logo/logo-all.svg')} alt='logo' />
+    };
     return (
       <Layout style={{ minHeight: '100vh' }}>
-        <Sider collapsible collapsed={this.state.collapsed} onCollapse={this.toggle}>
-          <div className='logo'></div>
-          <Menu theme='dark' mode='inline' defaultSelectedKeys={['1']}>
-            <Menu.Item key='1'>
-              <Icon type='user' />
-              {/* <span>nav 1</span> */}
-              <NavLink to="/">nav 1</NavLink>
-            </Menu.Item>
-            <Menu.Item key="2">
-              <Icon type="video-camera" />
-              {/* <span>nav 2</span> */}
-              <Link to="/add">nav 2</Link>
-            </Menu.Item>
-          </Menu>
+        <Sider collapsible collapsed={collapsed} onCollapse={this.toggle}>
+          <div className='logo'>
+            {logo()}
+          </div>
+          <SiderMenu defaultSelectedKey={defaultSelectedKey} />
         </Sider>
         {/* {console.log(match)} */}
-        
-        <Switch>
-          <Route path="/" exact component={Index} />
-          <Route path="/add" component={AddArticle} />
-          <Redirect to="/" />
-        </Switch>
+        <Layout>
+          <Header style={{ background: '#fff', padding: 0 }}>
+            <Icon
+              className='trigger'
+              type={collapsed ? 'menu-unfold' : 'menu-fold'}
+              onClick={this.toggle}
+            />
+          </Header>
+          <Switch>
+            <Route path="/" exact component={Index} />
+            <Route path="/list/sdyw" component={Index} />
+            <Route path="/list/tzgg" component={Index} />
+            <Route path="/edit" component={AddArticle} />
+            <Redirect to="/" />
+          </Switch>
+        </Layout>
       </Layout>
     )
   }
+}
+
+function SiderMenu(props) {
+  return (
+    <Menu
+      theme='dark'
+      mode='inline'
+      defaultSelectedKeys={[props.defaultSelectedKey]}
+      defaultOpenKeys={['文章列表']}
+    >
+      {
+        menuData.map(item => {
+          if (item.link) {
+            return (
+              <Menu.Item key={item.link}>
+                <NavLink to={item.link}>
+                  <Icon type={item.iconType} />
+                  <span>{item.text}</span>
+                </NavLink>
+              </Menu.Item>
+            )
+          } else {
+            return (
+              <SubMenu
+                key={item.text}
+                title={
+                  <span>
+                    <Icon type={item.iconType} />
+                    <span>{item.text}</span>
+                  </span>
+                }
+              >
+                {
+                  item.subData.map(value => {
+                    return (
+                      <Menu.Item key={value.link}>
+                        <NavLink to={value.link}> {value.text}</NavLink>
+                      </Menu.Item>
+                    )
+                  })
+                }
+              </SubMenu>
+            )
+          }
+        })
+      }
+    </Menu>
+  )
 }
 
 // https://www.oschina.net/question/253614_2237525
