@@ -116,7 +116,7 @@ function SiderMenu(props) {
                   item.subData.map(value => {
                     return (
                       <Menu.Item key={value.link}>
-                        <NavLink to={value.link}> {value.text}</NavLink>
+                        <NavLink to={value.link}>{value.text}</NavLink>
                       </Menu.Item>
                     )
                   })
