@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
-import { Layout, Breadcrumb, Button, Select, Input, Icon, Tooltip } from 'antd';
+import { Layout, Breadcrumb, Button, Select, Input, Icon, Tooltip, Modal } from 'antd';
 import { message } from 'antd';
 import BraftEditor from 'braft-editor';
+import axios from 'axios';
 import 'braft-editor/dist/index.css';
 
 const { Content } = Layout;
@@ -10,14 +11,29 @@ const { Option } = Select;
 export default class AddArticle extends Component {
   state = {
     editorState: BraftEditor.createEditorState('<p>Hello <b>World!</b></p>'),
-    outputHTML: '<p></p>',
+    outputHTML: '<p>Hello <b>World!</b></p>',
     type: null,
     title: null,
     iseditortitle: true,
+    // modal
+    confirmLoading: false,
+    modalVisible: false,
   };
 
   async componentDidMount() {
     // 假设此处从服务端获取html格式的编辑器内容
+  };
+
+  handleSubmit = async () => {
+    let { type, title, outputHTML, editorState } = this.state;
+    let raw = editorState.toRAW();         // raw用于下次编辑，html用户前台展示
+    let data = { type, title, html: outputHTML, raw };
+    this.setState({ modalVisible: true, confirmLoading: true });
+    let r = await axios.post('http://localhost:3001/admin/article/add', data);
+    console.log(r.data)
+    this.setState({ modalVisible: false, confirmLoading: false });
+    if (r.data.status) message.success(r.data.msg, 2);
+    else message.error(r.data.msg, 2);
   };
 
   submitContent = async () => {
@@ -34,6 +50,13 @@ export default class AddArticle extends Component {
     });
   };
 
+  handleChangeModalVisible = () => {
+    let { type, title } = this.state;
+    if (!type) return message.warn('请选择文章类别！', 2);
+    if (!title) return message.warn('请填写文章标题！', 2);
+    this.setState({ modalVisible: !this.state.modalVisible });
+  };
+
   handleTypeSelectChange = (value) => {
     this.setState({ type: value });
   };
@@ -43,7 +66,7 @@ export default class AddArticle extends Component {
   }
   handleTitleCompStateChange = () => {
     if (this.state.title) this.setState({ iseditortitle: !this.state.iseditortitle });
-    else message.warn('请填写标题！', 2)
+    else message.warn('请填写文章标题！', 2)
   }
 
   render() {
@@ -65,7 +88,12 @@ export default class AddArticle extends Component {
             </div>
             <div>
               <TypeSelect type={type} handleChange={this.handleTypeSelectChange} />
-              <Button type='primary' className='btn-primary'>提交</Button>
+              <Button
+                type='primary'
+                className='btn-primary'
+                onClick={this.handleChangeModalVisible}
+                loading={this.state.confirmLoading}
+              >提交</Button>
             </div>
           </div>
           <div className="editor-wrapper">
@@ -78,6 +106,18 @@ export default class AddArticle extends Component {
           <h5 className='output-title'>输出内容</h5>
           <div className="output-content">{outputHTML}</div>
         </div>
+        <Modal
+          title="请确认提交信息！"
+          okText='确认提交'
+          cancelText='取消'
+          visible={this.state.modalVisible}
+          onOk={this.handleSubmit}
+          confirmLoading={this.state.confirmLoading}
+          onCancel={this.handleChangeModalVisible}
+        >
+          <p>Title: {title}</p>
+          <p>Type: {type}</p>
+        </Modal>
       </Content >
     )
   }
@@ -114,7 +154,6 @@ function TitleComp(props) {
         onChange={handleChange}
         onPressEnter={handleStateChange}
         maxLength={50}
-        onBlur={() => console.log(1)}
         prefix={<Icon type="rocket" style={{ color: 'rgba(0,0,0,.25)' }} />}
       />
     )
