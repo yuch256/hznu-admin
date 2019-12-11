@@ -3,8 +3,10 @@ import { Layout, Menu, Icon } from 'antd';
 import { Route, Switch, Redirect, NavLink } from 'react-router-dom';
 import './BasicLayout.css';
 
-import Index from '../pages/Index';
-import AddArticle from '../pages/AddArticle';
+import IndexPage from '../pages/IndexPage';
+import AddArticlePage from '../pages/AddArticlePage';
+import NewsPage from '../pages/ArticleList/NewsPage';
+import NoticePage from '../pages/ArticleList/NoticePage';
 
 const { Sider, Header } = Layout;
 const { SubMenu } = Menu;
@@ -60,7 +62,6 @@ export default class BasicLayout extends Component {
           </div>
           <SiderMenu defaultSelectedKey={defaultSelectedKey} />
         </Sider>
-        {/* {console.log(match)} */}
         <Layout>
           <Header style={{ background: '#fff', padding: 0 }}>
             <Icon
@@ -70,10 +71,10 @@ export default class BasicLayout extends Component {
             />
           </Header>
           <Switch>
-            <Route path="/" exact component={Index} />
-            <Route path="/list/sdyw" component={Index} />
-            <Route path="/list/tzgg" component={Index} />
-            <Route path="/edit" component={AddArticle} />
+            <Route path="/" exact component={IndexPage} />
+            <Route path="/list/sdyw" component={NewsPage} />
+            <Route path="/list/tzgg" component={NoticePage} />
+            <Route path="/edit" component={AddArticlePage} />
             <Redirect to="/" />
           </Switch>
         </Layout>
@@ -129,5 +130,3 @@ function SiderMenu(props) {
     </Menu>
   )
 }
-
-// https://www.oschina.net/question/253614_2237525

@@ -1,3 +1,10 @@
+/* Content > div */
+.container {
+  padding: 24px;
+  min-height: 360px;
+  background-color: #fff;
+}
+
 /* ./components/AddArticle/Editor */
 
 .editor-wrapper {

@@ -13,7 +13,7 @@ const { Content } = Layout;
 //   ]
 // }
 
-export default class Index extends Component {
+export default class IndexPage extends Component {
   render() {
     return (
       <Content style={{ margin: '0 16px' }}>

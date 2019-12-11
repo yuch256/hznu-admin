@@ -29,7 +29,7 @@ export default class AddArticle extends Component {
     let raw = editorState.toRAW();         // raw用于下次编辑，html用户前台展示
     let data = { type, title, html: outputHTML, raw };
     this.setState({ modalVisible: true, confirmLoading: true });
-    let r = await axios.post('http://localhost:3001/admin/article/add', data);
+    let r = await axios.post('http://localhost:3001/admin/news/add', data);
     console.log(r.data)
     this.setState({ modalVisible: false, confirmLoading: false });
     if (r.data.status) message.success(r.data.msg, 2);
@@ -76,7 +76,7 @@ export default class AddArticle extends Component {
         <Breadcrumb style={{ margin: '16px 0' }}>
           <Breadcrumb.Item>添加文章</Breadcrumb.Item>
         </Breadcrumb>
-        <div style={{ padding: 24, background: '#fff', minHeight: 360 }}>
+        <div className='container'>
           <div className='add-header'>
             <div>
               <TitleComp

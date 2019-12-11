@@ -4,14 +4,15 @@ import './App.css';
 import 'antd/dist/antd.css';
 
 import BasicLayout from './layouts/BasicLayout';
+import UnauthorizedLayout from './layouts/UnauthorizedLayout';
+import AuthorizedRoute from './AuthorizedRoute';
 
 function App() {
   return (
     <Router>
       <Switch>
-        {/* <BasicLayout path='/add' component={AddArticle} />
-        <BasicLayout path='/' component={Index} /> */}
-        <Route path="/" component={BasicLayout} />
+        <Route path="/login" component={UnauthorizedLayout} />
+        <AuthorizedRoute path="/" component={BasicLayout} />
         <Redirect to="/" />
       </Switch>
     </Router>
@@ -19,3 +20,5 @@ function App() {
 }
 
 export default App;
+
+// 路由参阅：https://css-tricks.com/react-router-4/
