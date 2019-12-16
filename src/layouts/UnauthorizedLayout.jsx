@@ -4,7 +4,7 @@ import { Switch, Route, Redirect } from 'react-router-dom';
 import LoginPage from '../pages/LoginPage';
 
 const UnauthorizedLayout = () => (
-  <div>
+  <div className='login-container'>
     <Switch>
       <Route path="/login" component={LoginPage} />
       <Redirect to="/login" />

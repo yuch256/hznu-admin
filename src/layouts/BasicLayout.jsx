@@ -7,8 +7,9 @@ import IndexPage from '../pages/IndexPage';
 import AddArticlePage from '../pages/AddArticlePage';
 import NewsPage from '../pages/ArticleList/NewsPage';
 import NoticePage from '../pages/ArticleList/NoticePage';
+import LayoutHeader from '../components/BasicLayout/LayoutHeader';
 
-const { Sider, Header } = Layout;
+const { Sider } = Layout;
 const { SubMenu } = Menu;
 const menuData = [
   {
@@ -63,13 +64,10 @@ export default class BasicLayout extends Component {
           <SiderMenu defaultSelectedKey={defaultSelectedKey} />
         </Sider>
         <Layout>
-          <Header style={{ background: '#fff', padding: 0 }}>
-            <Icon
-              className='trigger'
-              type={collapsed ? 'menu-unfold' : 'menu-fold'}
-              onClick={this.toggle}
-            />
-          </Header>
+          <LayoutHeader
+            toggle={this.toggle}
+            collapsed={collapsed}
+          />
           <Switch>
             <Route path="/" exact component={IndexPage} />
             <Route path="/list/sdyw" component={NewsPage} />
