@@ -44,6 +44,12 @@ export default class BasicLayout extends Component {
     defaultSelectedKey: window.location.pathname,
   };
 
+  componentDidMount() {
+    // TODO 登录判断
+    let t = localStorage.getItem('hznu-t')
+    if (!t) this.props.history.push('/login')
+  };
+
   toggle = () => {
     this.setState({ collapsed: !this.state.collapsed })
   };

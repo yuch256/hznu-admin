@@ -15,8 +15,7 @@ class LoginPage extends React.Component {
     // 如果已经登录就跳转到首页
     console.log(this.props.history)
     let t = localStorage.getItem('hznu-t')
-    // if (t) this.props.history.push('/')
-    // if (t) window.location.href = '/'
+    if (t) this.props.history.push('/')
   }
 
   login = async e => {
