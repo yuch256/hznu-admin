@@ -1,9 +1,8 @@
 import React from 'react';
 import './LoginPage.css';
-import { message } from 'antd';
+// import { message } from 'antd';
 
-import { token } from '../utils/config';
-import { loginFetch } from '../services/login';
+// import { loginFetch } from '../services/login';
 
 class LoginPage extends React.Component {
   state = {
@@ -14,14 +13,10 @@ class LoginPage extends React.Component {
   componentDidMount() {
     // TODO 判断是否登录
     // 如果已经登录就跳转到首页
-    if (token) this.props.history.push('/')
-  }
-
-  handleChangeUsr = e => {
-    this.setState({ usr: e.target.value })
-  }
-  handleChangePwd = e => {
-    this.setState({ pwd: e.target.value })
+    console.log(this.props.history)
+    let t = localStorage.getItem('hznu-t')
+    // if (t) this.props.history.push('/')
+    // if (t) window.location.href = '/'
   }
 
   login = async e => {
@@ -31,6 +26,7 @@ class LoginPage extends React.Component {
     // if (result === 0) message.error(msg, 2)
     // else {
     // }
+    console.log('login')
     localStorage.setItem('hznu-t', '算你登录了')
     this.props.history.push('/')
   }
@@ -47,11 +43,21 @@ class LoginPage extends React.Component {
             <form onSubmit={this.login}>
               <div className="from-row">
                 <label htmlFor="usr" className="from-label">User</label>
-                <input value={usr} onChange={this.handleChangeUsr} type="usr" className="from-input" required />
+                <input
+                  className="from-input"
+                  value={usr}
+                  type="usr"
+                  onChange={e => this.setState({ usr: e.target.value })}
+                  required />
               </div>
               <div className="from-row">
                 <label htmlFor="pwd" className="from-label">Password</label>
-                <input value={pwd} onChange={this.handleChangePwd} type="password" className="from-input" required />
+                <input
+                  className="from-input"
+                  value={pwd}
+                  type="password"
+                  onChange={e => this.setState({ pwd: e.target.value })}
+                  required />
               </div>
               <div className="from-row">
                 <button type="submit" className="from-btn">Login</button>

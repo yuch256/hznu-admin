@@ -6,6 +6,7 @@ export default class AuthorizedRoute extends Component {
     const { component: Component, ...rest } = this.props;
     return (
       <Route {...rest} render={props => {
+        console.log(`auth: ${this.props.logined}`)
         return this.props.logined
           ? <Component {...props} />
           : <Redirect to="/login" />
