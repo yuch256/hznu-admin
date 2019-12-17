@@ -1,8 +1,9 @@
 import React from 'react';
 import './LoginPage.css';
-// import { message } from 'antd';
+import axios from 'axios';
+import { message } from 'antd';
 
-// import { loginFetch } from '../services/login';
+import { loginFetch } from '../services/loginReq';
 
 class LoginPage extends React.Component {
   state = {
@@ -10,24 +11,41 @@ class LoginPage extends React.Component {
     pwd: '',
   };
 
-  componentDidMount() {
+  async componentDidMount() {
+    axios.defaults.baseURL = 'http://localhost:3001';
     // TODO 判断是否登录
     // 如果已经登录就跳转到首页
-    console.log(this.props.history)
-    let t = localStorage.getItem('hznu-t')
-    if (t) this.props.history.push('/#/')
+    // let t = localStorage.getItem('admin-t');
+    // axios.defaults.headers.common['Authorization'] = t;
+    // if (t) {
+    //   try {
+    //     let r = await axios.post('/admin/login');
+    //     console.log(r)
+    //     if (r.data.result === 1) {
+    //       this.props.history.push('/#/')
+    //     }
+    //   } catch (err) {
+    //     console.log(err)
+    //   }
+    // }
   }
 
   login = async e => {
     e.preventDefault()
     // TODO 登录校验
-    // let { result, msg } = await loginFetch()
-    // if (result === 0) message.error(msg, 2)
-    // else {
-    // }
+    let data = {
+      user_id: document.getElementById('usr').value,
+      pwd: document.getElementById('pwd').value
+    };
+    let { result, msg, token } = await loginFetch(data);
+    if (result === 0) message.error(msg, 2)
+    else {
+      localStorage.setItem('admin-t', token)
+      this.props.history.push('/')
+    }
     console.log('login')
     localStorage.setItem('hznu-t', '算你登录了')
-    this.props.history.push('/')
+    // this.props.history.push('/')
   }
 
   render() {
@@ -39,13 +57,14 @@ class LoginPage extends React.Component {
             <div className="form-header">
               <h1>Login</h1>
             </div>
-            <form onSubmit={this.login}>
+            <form onSubmit={this.login} >
               <div className="from-row">
-                <label htmlFor="usr" className="from-label">User</label>
+                <label htmlFor="usr" className="from-label">Username</label>
                 <input
                   className="from-input"
                   value={usr}
                   type="usr"
+                  id='usr'
                   onChange={e => this.setState({ usr: e.target.value })}
                   required />
               </div>
@@ -55,6 +74,7 @@ class LoginPage extends React.Component {
                   className="from-input"
                   value={pwd}
                   type="password"
+                  id='pwd'
                   onChange={e => this.setState({ pwd: e.target.value })}
                   required />
               </div>
