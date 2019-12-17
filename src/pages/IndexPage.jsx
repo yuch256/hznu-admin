@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { Layout, Breadcrumb } from 'antd';
+import { Link } from 'react-router-dom';
 
 const { Content } = Layout;
 // const buttonData = {
@@ -22,6 +23,7 @@ export default class IndexPage extends Component {
         </Breadcrumb>
         <div style={{ padding: 24, background: '#fff', minHeight: 360 }}>
           Bill is a cat.
+          <Link to='/edit'>edit</Link>
         </div>
       </Content>
     )

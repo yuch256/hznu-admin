@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import { Layout, Menu, Icon } from 'antd';
 import { Route, Switch, Redirect, NavLink } from 'react-router-dom';
-import './BasicLayout.css';
 
 import IndexPage from '../pages/IndexPage';
 import AddArticlePage from '../pages/AddArticlePage';
@@ -13,7 +12,7 @@ const { Sider } = Layout;
 const { SubMenu } = Menu;
 const menuData = [
   {
-    link: '/',
+    path: '/',
     iconType: 'home',
     text: '功能介绍',
   },
@@ -22,17 +21,17 @@ const menuData = [
     text: '文章列表',
     subData: [
       {
-        link: '/list/sdyw',
+        path: '/list/sdyw',
         text: '师大要闻'
       },
       {
-        link: '/list/tzgg',
+        path: '/list/tzgg',
         text: '通知公告'
       }
     ],
   },
   {
-    link: '/edit',
+    path: '/edit',
     iconType: 'edit',
     text: '添加文章',
   }
@@ -41,7 +40,8 @@ const menuData = [
 export default class BasicLayout extends Component {
   state = {
     collapsed: false,
-    defaultSelectedKey: window.location.pathname,
+    selectedKey: '/',
+    usr: 'Admin',
   };
 
   componentDidMount() {
@@ -55,7 +55,7 @@ export default class BasicLayout extends Component {
   };
 
   render() {
-    let { collapsed, defaultSelectedKey } = this.state;
+    let { collapsed, selectedKey, usr } = this.state;
     const logo = () => {
       return collapsed
         ? <img className='logo-circle' src={require('../assets/logo/logo.svg')} alt='logo' />
@@ -64,15 +64,16 @@ export default class BasicLayout extends Component {
     return (
       <Layout style={{ minHeight: '100vh' }}>
         <Sider collapsible collapsed={collapsed} onCollapse={this.toggle}>
-          <div className='logo'>
+          <div style={{ height: 32, backgroundColor: 'rgba(255, 255, 255, 0.2)', margin: 16, textAlign: 'center' }}>
             {logo()}
           </div>
-          <SiderMenu defaultSelectedKey={defaultSelectedKey} />
+          <SiderMenu selectedKey={selectedKey} />
         </Sider>
         <Layout>
           <LayoutHeader
             toggle={this.toggle}
             collapsed={collapsed}
+            usr={usr}
           />
           <Switch>
             <Route path="/" exact component={IndexPage} />
@@ -92,15 +93,15 @@ function SiderMenu(props) {
     <Menu
       theme='dark'
       mode='inline'
-      defaultSelectedKeys={[props.defaultSelectedKey]}
-      defaultOpenKeys={['文章列表']}
+      defaultSelectedKeys={[props.selectedKey]}
+    // defaultOpenKeys={['文章列表']}
     >
       {
         menuData.map(item => {
-          if (item.link) {
+          if (item.path) {
             return (
-              <Menu.Item key={item.link}>
-                <NavLink to={item.link}>
+              <Menu.Item key={item.path}>
+                <NavLink to={item.path}>
                   <Icon type={item.iconType} />
                   <span>{item.text}</span>
                 </NavLink>
@@ -120,8 +121,8 @@ function SiderMenu(props) {
                 {
                   item.subData.map(value => {
                     return (
-                      <Menu.Item key={value.link}>
-                        <NavLink to={value.link}>{value.text}</NavLink>
+                      <Menu.Item key={value.path}>
+                        <NavLink to={value.path}>{value.text}</NavLink>
                       </Menu.Item>
                     )
                   })
