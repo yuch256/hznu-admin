@@ -8,7 +8,7 @@ export const loginVerifyFetch = async (data) => {
 }
 
 export const authVerifyFetch = async () => {
-  let r = await axios.post('/admin/login');
+  let r = await axios.get('/admin/login');
   return r.data;
 }
 

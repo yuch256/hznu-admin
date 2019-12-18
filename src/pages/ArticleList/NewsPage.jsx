@@ -1,11 +1,34 @@
 import React, { Component } from 'react';
 import { Layout, Breadcrumb, Table } from 'antd';
+import { Link } from 'react-router-dom';
+
+import { selnewsFetch } from '../../services/newsFetch';
 
 const { Content } = Layout;
-const { Column } = Table;
 
 export default class NewsPage extends Component {
+  state = {
+    data: [],
+  };
+
+  async componentDidMount() {
+    try {
+      let r = await selnewsFetch({ type: '师大要闻' });
+      // let r = await selnewsFetch({ type: '通知公告' });
+      let { data } = r.data;
+      console.log(data)
+      let dataSource = [];
+      data.forEach(v => {
+        v.key = v.news_id;
+        dataSource.push(v);
+      });
+      this.setState({ data: dataSource });
+    } catch (err) { console.log(err) }
+  }
+
   render() {
+    let { data } = this.state;
+
     return (
       <Content style={{ margin: '0 16px' }}>
         <Breadcrumb style={{ margin: '16px 0' }}>
@@ -13,17 +36,7 @@ export default class NewsPage extends Component {
           <Breadcrumb.Item>师大要闻</Breadcrumb.Item>
         </Breadcrumb>
         <div className='container'>
-          <Table dataSource={data}>
-            <Column title='标题' dataIndex='title' key='title' />
-            <Column title='作者' dataIndex='author' key='author' />
-            <Column title='发布时间' dataIndex='initTime' key='initTime' />
-            <Column title='更新时间' dataIndex='updateTime' key='updateTime' />
-            <Column
-              title='编辑'
-              dataIndex='action'
-              key='action'
-              render={() => (<span><a href="/list/sdyw">editor</a></span>)}
-            />
+          <Table dataSource={data} columns={columns}>
           </Table>
         </div>
       </Content>
@@ -31,12 +44,39 @@ export default class NewsPage extends Component {
   }
 }
 
-const data = [
+const columns = [
   {
-    key: '1',
-    title: '1',
-    author: '1',
-    initTime: '1',
-    updateTime: '1',
+    title: '标题',
+    dataIndex: 'news_name',
+    key: 'news_name',
+  },
+  {
+    title: '用户ID',
+    dataIndex: 'user_id',
+    key: 'user_id',
+  },
+  {
+    title: '用户名',
+    dataIndex: 'user_name',
+    key: 'user_name',
+  },
+  {
+    title: '创建时间',
+    dataIndex: 'create_time',
+    key: 'create_time',
+  },
+  {
+    title: '更新时间',
+    dataIndex: 'update_time',
+    key: 'update_time',
+  },
+  {
+    title: '编辑',
+    dataIndex: 'edit',
+    key: 'edit',
+    render: () => (
+      // <span key='dslkf'><a href="/list/sdyw">edit</a></span>
+      <Link to='/'>edit</Link>
+    )
   }
 ];

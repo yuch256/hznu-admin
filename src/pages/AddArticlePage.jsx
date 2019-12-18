@@ -29,20 +29,13 @@ export default class AddArticle extends Component {
   handleSubmit = async () => {
     let { type, title, outputHTML, editorState } = this.state;
     let raw = editorState.toRAW();         // raw用于下次编辑，html用户前台展示
-    let data = { type, title, html: outputHTML, raw };
+    let data = { type, title, content: outputHTML, raw };
     this.setState({ modalVisible: true, confirmLoading: true });
     let r = await addnewsFetch(data);
     console.log(r.data)
     this.setState({ modalVisible: false, confirmLoading: false });
-    if (r.data.status) message.success(r.data.msg, 2);
+    if (r.data.result === 1) message.success(r.data.msg, 2);
     else message.error(r.data.msg, 2);
-  };
-
-  submitContent = async () => {
-    // 在编辑器获得焦点时按下ctrl+s会执行此方法
-    // 编辑器内容提交到服务端之前，可直接调用editorState.toHTML()来获取HTML格式的内容
-    const htmlContent = this.state.editorState.toHTML();
-    this.setState({ editorState: BraftEditor.createEditorState(htmlContent) });
   };
 
   handleEditorChange = (editorState) => {
@@ -102,7 +95,6 @@ export default class AddArticle extends Component {
             <BraftEditor
               value={editorState}
               onChange={this.handleEditorChange}
-              onSave={this.submitContent}
             />
           </div>
           <h5 className='output-title'>输出内容</h5>
