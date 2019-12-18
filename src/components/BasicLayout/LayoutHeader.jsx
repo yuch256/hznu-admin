@@ -1,20 +1,42 @@
 import React, { Component } from 'react';
-import { Layout, Icon, Avatar, Menu, Dropdown } from 'antd';
+import { Layout, Icon, Avatar, Menu, Dropdown, message } from 'antd';
 import './LayoutHeader.css';
+import { authVerifyFetch } from '../../services/loginFetch';
+import { tokenKey } from '../../utils/config';
 
 const { Header } = Layout;
 
 export default class LayoutHeader extends Component {
-  state={}
+  async componentDidMount() {
+    let t = localStorage.getItem(tokenKey);
+
+    if (t) {
+      try {
+        let data = await authVerifyFetch();
+        console.log('header' + JSON.stringify(data))
+        if (data.result === 1) {
+          this.props.getUsername(data.user_name);
+          message.success(data.msg, 2);
+        } else {
+          this.props.history.push('/login');
+          message.error(data.msg, 2);
+        }
+      } catch (err) {
+        console.log(err)
+      }
+    } else {
+      this.props.history.push('/login');
+    }
+  }
+
   loginout = () => {
-    // TODO 发送退出登录信号
-    localStorage.removeItem('hznu-t')
-    // window.location.reload()
-    window.location.href = '/#/login'
+    // TODO 发送退出登录请求
+    localStorage.removeItem(tokenKey);
+    this.props.history.push('/login');
   }
 
   render() {
-    let { toggle, collapsed, usr } = this.props;
+    let { toggle, collapsed, user_name } = this.props;
     const menu = (
       <Menu>
         <Menu.Item key='logout' onClick={this.loginout}>
@@ -36,7 +58,7 @@ export default class LayoutHeader extends Component {
           <Dropdown overlay={menu} placement='bottomLeft' overlayStyle={{ minWidth: 155 }}>
             <span className='bas-layout-header-block bas-dropdown-trigger'>
               <Avatar icon="user" className='bas-avatar' />
-              <span>{usr}</span>
+              <span>{user_name}</span>
             </span>
           </Dropdown>
         </div>

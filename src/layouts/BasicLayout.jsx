@@ -41,21 +41,19 @@ export default class BasicLayout extends Component {
   state = {
     collapsed: false,
     selectedKey: '/',
-    usr: 'Admin',
+    user_name: '???',
   };
 
-  componentDidMount() {
-    // TODO 登录判断
-    let t = localStorage.getItem('hznu-t')
-    if (!t) this.props.history.push('/login')
-  };
+  getUsername = (name) => {
+    this.setState({ user_name: name });
+  }
 
   toggle = () => {
     this.setState({ collapsed: !this.state.collapsed })
   };
 
   render() {
-    let { collapsed, selectedKey, usr } = this.state;
+    let { collapsed, selectedKey, user_name } = this.state;
     const logo = () => {
       return collapsed
         ? <img className='logo-circle' src={require('../assets/logo/logo.svg')} alt='logo' />
@@ -73,7 +71,9 @@ export default class BasicLayout extends Component {
           <LayoutHeader
             toggle={this.toggle}
             collapsed={collapsed}
-            usr={usr}
+            user_name={user_name}
+            getUsername={this.getUsername}
+            history={this.props.history}
           />
           <Switch>
             <Route path="/" exact component={IndexPage} />

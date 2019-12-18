@@ -1,9 +1,9 @@
 import React from 'react';
 import './LoginPage.css';
-import axios from 'axios';
 import { message } from 'antd';
 
-import { loginFetch } from '../services/loginReq';
+import { loginVerifyFetch, authVerifyFetch } from '../services/loginFetch';
+import { tokenKey } from '../utils/config';
 
 class LoginPage extends React.Component {
   state = {
@@ -12,40 +12,36 @@ class LoginPage extends React.Component {
   };
 
   async componentDidMount() {
-    axios.defaults.baseURL = 'http://localhost:3001';
-    // TODO 判断是否登录
-    // 如果已经登录就跳转到首页
-    // let t = localStorage.getItem('admin-t');
-    // axios.defaults.headers.common['Authorization'] = t;
-    // if (t) {
-    //   try {
-    //     let r = await axios.post('/admin/login');
-    //     console.log(r)
-    //     if (r.data.result === 1) {
-    //       this.props.history.push('/#/')
-    //     }
-    //   } catch (err) {
-    //     console.log(err)
-    //   }
-    // }
+    // 身份认证，成功则跳转到首页
+    let t = localStorage.getItem(tokenKey);
+
+    if (t) {
+      try {
+        let data = await authVerifyFetch();
+        console.log('login' + JSON.stringify(data))
+        if (data.result) {
+          this.props.history.push('/');
+        }
+      } catch (err) {
+        console.log(err)
+      }
+    }
   }
 
   login = async e => {
     e.preventDefault()
-    // TODO 登录校验
+    // 登录校验
     let data = {
-      user_id: document.getElementById('usr').value,
-      pwd: document.getElementById('pwd').value
+      user_id: this.state.usr,
+      pwd: this.state.pwd
     };
-    let { result, msg, token } = await loginFetch(data);
-    if (result === 0) message.error(msg, 2)
-    else {
-      localStorage.setItem('admin-t', token)
-      this.props.history.push('/')
-    }
-    console.log('login')
-    localStorage.setItem('hznu-t', '算你登录了')
-    // this.props.history.push('/')
+    let { result, msg, token } = await loginVerifyFetch(data);
+
+    if (result === 1) {
+      localStorage.setItem(tokenKey, token);
+      message.success(msg, 2);
+      this.props.history.push('/');
+    } else message.error(msg, 2);
   }
 
   render() {
