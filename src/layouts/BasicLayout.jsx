@@ -44,6 +44,7 @@ export default class BasicLayout extends Component {
     user_name: '???',
   };
 
+  // 获取用户名
   getUsername = (name) => {
     this.setState({ user_name: name });
   }

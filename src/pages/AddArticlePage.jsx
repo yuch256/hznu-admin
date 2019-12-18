@@ -2,16 +2,18 @@ import React, { Component } from 'react';
 import { Layout, Breadcrumb, Button, Select, Input, Icon, Tooltip, Modal } from 'antd';
 import { message } from 'antd';
 import BraftEditor from 'braft-editor';
-import axios from 'axios';
 import 'braft-editor/dist/index.css';
+
+import { addnewsFetch } from '../services/newsFetch';
 
 const { Content } = Layout;
 const { Option } = Select;
+const initEditor = '<p>Hello <b>World!</b></p>';
 
 export default class AddArticle extends Component {
   state = {
-    editorState: BraftEditor.createEditorState('<p>Hello <b>World!</b></p>'),
-    outputHTML: '<p>Hello <b>World!</b></p>',
+    editorState: BraftEditor.createEditorState(initEditor),
+    outputHTML: initEditor,
     type: null,
     title: null,
     iseditortitle: true,
@@ -29,7 +31,7 @@ export default class AddArticle extends Component {
     let raw = editorState.toRAW();         // raw用于下次编辑，html用户前台展示
     let data = { type, title, html: outputHTML, raw };
     this.setState({ modalVisible: true, confirmLoading: true });
-    let r = await axios.post('http://localhost:3001/admin/news/add', data);
+    let r = await addnewsFetch(data);
     console.log(r.data)
     this.setState({ modalVisible: false, confirmLoading: false });
     if (r.data.status) message.success(r.data.msg, 2);
