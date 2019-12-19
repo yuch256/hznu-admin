@@ -14,6 +14,7 @@ class LoginPage extends React.Component {
   async componentDidMount() {
     // 身份认证，成功则跳转到首页
     let t = localStorage.getItem(tokenKey);
+    console.log(1)
 
     if (t) {
       try {

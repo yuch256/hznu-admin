@@ -22,6 +22,7 @@ export default class LayoutHeader extends Component {
           message.error(data.msg, 2);
         }
       } catch (err) {
+        this.props.history.push('/login');
         console.log(err)
       }
     } else {
