@@ -1,13 +1,14 @@
 import React, { Component } from 'react';
-import { Layout, Breadcrumb, Button, Select, Input, Icon, Tooltip, Modal } from 'antd';
+import { Layout, Breadcrumb, Button, Modal } from 'antd';
 import { message } from 'antd';
 import BraftEditor from 'braft-editor';
 import 'braft-editor/dist/index.css';
 
 import { addnewsFetch } from '../services/newsFetch';
+import ArticleTypeSelect from '../components/common/ArticleTypeSelect';
+import ArticleTitleComp from '../components/common/ArticleTitleComp';
 
 const { Content } = Layout;
-const { Option } = Select;
 const initEditor = '<p>Hello <b>World!</b></p>';
 
 export default class AddArticle extends Component {
@@ -21,11 +22,7 @@ export default class AddArticle extends Component {
     confirmLoading: false,
     modalVisible: false,
   };
-
-  async componentDidMount() {
-    // 假设此处从服务端获取html格式的编辑器内容
-  };
-
+  // 点击确认提交按钮
   handleSubmit = async () => {
     let { type, title, outputHTML, editorState } = this.state;
     let raw = editorState.toRAW();         // raw用于下次编辑，html用户前台展示
@@ -37,29 +34,30 @@ export default class AddArticle extends Component {
     if (r.data.result === 1) message.success(r.data.msg, 2);
     else message.error(r.data.msg, 2);
   };
-
-  handleEditorChange = (editorState) => {
+  // 更改文章内容
+  handleChangeEditor = (editorState) => {
     this.setState({
       editorState,
       outputHTML: editorState.toHTML()
     });
   };
-
+  // 点击提交或取消按钮
   handleChangeModalVisible = () => {
     let { type, title } = this.state;
     if (!type) return message.warn('请选择文章类别！', 2);
     if (!title) return message.warn('请填写文章标题！', 2);
     this.setState({ modalVisible: !this.state.modalVisible });
   };
-
-  handleTypeSelectChange = (value) => {
+  // 更改文章类型
+  handleChangeArticleType = (value) => {
     this.setState({ type: value });
   };
-
-  handleTitleCompChange = (e) => {
+  // 更改文章标题
+  handleChangeArticleTitle = (e) => {
     this.setState({ title: e.target.value });
   }
-  handleTitleCompStateChange = () => {
+  // 更改文章标题填写状态
+  handleChangeArticleTitleState = () => {
     if (this.state.title) this.setState({ iseditortitle: !this.state.iseditortitle });
     else message.warn('请填写文章标题！', 2)
   }
@@ -74,15 +72,15 @@ export default class AddArticle extends Component {
         <div className='container'>
           <div className='add-header'>
             <div>
-              <TitleComp
+              <ArticleTitleComp
                 iseditortitle={iseditortitle}
                 title={title}
-                handleChange={this.handleTitleCompChange}
-                handleStateChange={this.handleTitleCompStateChange}
+                handleChange={this.handleChangeArticleTitle}
+                handleStateChange={this.handleChangeArticleTitleState}
               />
             </div>
             <div>
-              <TypeSelect type={type} handleChange={this.handleTypeSelectChange} />
+              <ArticleTypeSelect type={type} handleChange={this.handleChangeArticleType} />
               <Button
                 type='primary'
                 className='btn-primary'
@@ -94,12 +92,13 @@ export default class AddArticle extends Component {
           <div className="editor-wrapper">
             <BraftEditor
               value={editorState}
-              onChange={this.handleEditorChange}
+              onChange={this.handleChangeEditor}
             />
           </div>
           <h5 className='output-title'>输出内容</h5>
           <div className="output-content">{outputHTML}</div>
         </div>
+
         <Modal
           title="请确认提交信息！"
           okText='确认提交'
@@ -113,51 +112,6 @@ export default class AddArticle extends Component {
           <p>Type: {type}</p>
         </Modal>
       </Content >
-    )
-  }
-}
-
-function TypeSelect(props) {
-  const seletData = ['师大要闻', '通知公告', '党建文化', '教学科研', '科研论文'];
-  let { type, handleChange } = props;
-  return (
-    <Select
-      dropdownMatchSelectWidth={false}
-      onSelect={(value) => handleChange(value)}
-      value={type || '文章类别'}
-    >
-      {
-        seletData.map(value => {
-          return (
-            <Option key={value}>{value}</Option>
-          )
-        })
-      }
-    </Select>
-  )
-}
-
-function TitleComp(props) {
-  let { iseditortitle, title, handleChange, handleStateChange } = props;
-  if (iseditortitle) {
-    return (
-      <Input
-        placeholder="Title"
-        allowClear
-        value={title}
-        onChange={handleChange}
-        onPressEnter={handleStateChange}
-        maxLength={50}
-        prefix={<Icon type="rocket" style={{ color: 'rgba(0,0,0,.25)' }} />}
-      />
-    )
-  } else {
-    return (
-      <Tooltip title={title}>
-        <Button onClick={handleStateChange} icon='edit'>
-          <span>{title}</span>
-        </Button>
-      </Tooltip>
     )
   }
 }

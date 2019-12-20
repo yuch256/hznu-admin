@@ -11,3 +11,8 @@ export const selnewsFetch = async (data) => {
   let r = await axios.post('/admin/news', data);
   return r;
 };
+
+export const updatenewsFetch = async (data) => {
+  let r = await axios.post('/admin/news/update', data);
+  return r;
+}

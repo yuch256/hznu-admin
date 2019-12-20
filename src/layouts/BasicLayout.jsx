@@ -31,8 +31,8 @@ const menuData = [
     ],
   },
   {
-    path: '/edit',
-    iconType: 'edit',
+    path: '/add',
+    iconType: 'file-add',
     text: '添加文章',
   }
 ];
@@ -80,7 +80,7 @@ export default class BasicLayout extends Component {
             <Route path="/" exact component={IndexPage} />
             <Route path="/list/sdyw" component={NewsPage} />
             <Route path="/list/tzgg" component={NoticePage} />
-            <Route path="/edit" component={AddArticlePage} />
+            <Route path="/add" component={AddArticlePage} />
             <Redirect to="/" />
           </Switch>
         </Layout>
