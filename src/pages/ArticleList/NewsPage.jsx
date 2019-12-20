@@ -1,15 +1,15 @@
 import React, { Component } from 'react';
-import { Layout, Breadcrumb, Table, Divider, message, Button, Modal } from 'antd';
+import { Layout, Breadcrumb, Table, Divider, message, Button, Modal, Popconfirm } from 'antd';
 import { Route } from 'react-router-dom';
 import BraftEditor from 'braft-editor';
 
-import { selnewsFetch, updatenewsFetch } from '../../services/newsFetch';
+import { selnewsFetch, updatenewsFetch, deletenewsFetch } from '../../services/newsFetch';
 import ArticleTitleComp from '../../components/common/ArticleTitleComp';
 import ArticleTypeSelect from '../../components/common/ArticleTypeSelect';
 
 const { Content } = Layout;
 const { Column } = Table;
-const initEditor = 'Init';
+const initEditor = '';
 
 export default class NewsPage extends Component {
   state = {
@@ -26,11 +26,28 @@ export default class NewsPage extends Component {
     // modal
     confirmLoading: false,    // 按钮是否转圈圈
     modalVisible: false,      // modal是否开启
+    // listType: null,           // 导航栏文章列表选项
   };
+  // 用这个，点击导航栏组件就能更新了
+  componentWillReceiveProps(nextProps) {
+    this.updateData(nextProps.listType)
+  };
+  // static getDerivedStateFromProps(nextProps, prevState) {
+  //   const { listType } = nextProps;
+  //   console.log(nextProps, prevState)
+  //   if (listType !== prevState.listType) {
+  //     return { listType };
+  //   }
+  //   return null;
+  // }
 
-  async componentDidMount() {
+  componentDidMount() {
+    this.updateData(this.props.listType)
+  };
+  // 更新列表数据
+  updateData = async (listType) => {
     try {
-      let r = await selnewsFetch([{ key: 'type', value: '师大要闻' }]);
+      let r = await selnewsFetch([{ key: 'type', value: listType }]);
       let { data } = r.data;
       console.log(data)
       let dataSource = [];
@@ -55,6 +72,15 @@ export default class NewsPage extends Component {
       news_id: data[0].news_id,
     });
   };
+  // 点击删除文章
+  handleClickDelete = async (record) => {
+    let r = await deletenewsFetch({ news_id: record.news_id });
+    if (r.data.result === 1) {
+      const data = [...this.state.data];
+      this.setState({ data: data.filter(item => item.key !== record.news_id) });
+      message.success(r.data.msg, 2);
+    } else message.error(r.data.msg, 2);
+  }
   // 编辑页面点击返回
   handleClickBack = () => {
     this.setState({ isEdit: false });
@@ -106,7 +132,7 @@ export default class NewsPage extends Component {
       <Content style={{ margin: '0 16px' }}>
         <Breadcrumb style={{ margin: '16px 0' }}>
           <Breadcrumb.Item>文章列表</Breadcrumb.Item>
-          <Breadcrumb.Item>师大要闻</Breadcrumb.Item>
+          <Breadcrumb.Item>{this.props.listType}</Breadcrumb.Item>
         </Breadcrumb>
         <div className='container'>
           <Route render={() => {
@@ -147,6 +173,7 @@ export default class NewsPage extends Component {
                 <TableList
                   data={data}
                   handleClickEdit={this.handleClickEdit}
+                  handleClickDelete={this.handleClickDelete}
                 />
               )
           }} />
@@ -186,7 +213,9 @@ function TableList(props) {
           <span style={{ cursor: 'pointer', color: '#40a9ff' }}>
             <span onClick={() => props.handleClickEdit(record)}>Edit</span>
             <Divider type='vertical' />
-            <span>Delete</span>
+            <Popconfirm title="Sure to delete?" onConfirm={() => props.handleClickDelete(record)}>
+              <span>Delete</span>
+            </Popconfirm>
           </span>
         )}
       />

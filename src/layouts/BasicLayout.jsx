@@ -5,7 +5,6 @@ import { Route, Switch, Redirect, NavLink } from 'react-router-dom';
 import IndexPage from '../pages/IndexPage';
 import AddArticlePage from '../pages/AddArticlePage';
 import NewsPage from '../pages/ArticleList/NewsPage';
-import NoticePage from '../pages/ArticleList/NoticePage';
 import LayoutHeader from '../components/BasicLayout/LayoutHeader';
 
 const { Sider } = Layout;
@@ -27,6 +26,18 @@ const menuData = [
       {
         path: '/list/tzgg',
         text: '通知公告'
+      },
+      {
+        path: '/list/djwh',
+        text: '党建文化'
+      },
+      {
+        path: '/list/jxky',
+        text: '教学科研'
+      },
+      {
+        path: '/list/kylw',
+        text: '科研论文'
       }
     ],
   },
@@ -78,8 +89,11 @@ export default class BasicLayout extends Component {
           />
           <Switch>
             <Route path="/" exact component={IndexPage} />
-            <Route path="/list/sdyw" component={NewsPage} />
-            <Route path="/list/tzgg" component={NoticePage} />
+            <Route path="/list/sdyw" render={() => <NewsPage listType='师大要闻' />} />
+            <Route path="/list/tzgg" render={() => <NewsPage listType='通知公告' />} />
+            <Route path="/list/djwh" render={() => <NewsPage listType='党建文化' />} />
+            <Route path="/list/jxky" render={() => <NewsPage listType='教学科研' />} />
+            <Route path="/list/kylw" render={() => <NewsPage listType='科研论文' />} />
             <Route path="/add" component={AddArticlePage} />
             <Redirect to="/" />
           </Switch>
