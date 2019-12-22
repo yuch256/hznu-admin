@@ -5,6 +5,7 @@ import { Route, Switch, Redirect, NavLink } from 'react-router-dom';
 import IndexPage from '../pages/IndexPage';
 import AddArticlePage from '../pages/AddArticlePage';
 import NewsPage from '../pages/ArticleList/NewsPage';
+import HomeCarousel from '../pages/HomeCarousel';
 import LayoutHeader from '../components/BasicLayout/LayoutHeader';
 
 const { Sider } = Layout;
@@ -45,6 +46,11 @@ const menuData = [
     path: '/add',
     iconType: 'file-add',
     text: '添加文章',
+  },
+  {
+    path: '/carousel',
+    iconType: 'upload',
+    text: '首页轮播',
   }
 ];
 
@@ -95,6 +101,7 @@ export default class BasicLayout extends Component {
             <Route path="/list/jxky" render={() => <NewsPage listType='教学科研' />} />
             <Route path="/list/kylw" render={() => <NewsPage listType='科研论文' />} />
             <Route path="/add" component={AddArticlePage} />
+            <Route path="/carousel" component={HomeCarousel} />
             <Redirect to="/" />
           </Switch>
         </Layout>

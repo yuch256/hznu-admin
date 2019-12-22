@@ -32,14 +32,6 @@ export default class NewsPage extends Component {
   componentWillReceiveProps(nextProps) {
     this.updateData(nextProps.listType)
   };
-  // static getDerivedStateFromProps(nextProps, prevState) {
-  //   const { listType } = nextProps;
-  //   console.log(nextProps, prevState)
-  //   if (listType !== prevState.listType) {
-  //     return { listType };
-  //   }
-  //   return null;
-  // }
 
   componentDidMount() {
     this.updateData(this.props.listType)

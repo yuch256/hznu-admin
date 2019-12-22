@@ -1,9 +1,9 @@
 import axios from 'axios';
 
-import { developBaseURL, tokenKey } from '../utils/config';
+import { baseURL, tokenKey } from '../utils/config';
 
 // Global axios defaults
-axios.defaults.baseURL = developBaseURL;
+axios.defaults.baseURL = baseURL;
 
 // 请求拦截器
 axios.interceptors.request.use(function (config) {
