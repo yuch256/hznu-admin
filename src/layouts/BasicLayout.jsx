@@ -2,11 +2,12 @@ import React, { Component } from 'react';
 import { Layout, Menu, Icon } from 'antd';
 import { Route, Switch, Redirect, NavLink } from 'react-router-dom';
 
+import LayoutHeader from '../components/BasicLayout/LayoutHeader';
 import IndexPage from '../pages/IndexPage';
 import AddArticlePage from '../pages/AddArticlePage';
 import NewsPage from '../pages/ArticleList/NewsPage';
-import HomeCarousel from '../pages/HomeCarousel';
-import LayoutHeader from '../components/BasicLayout/LayoutHeader';
+import CarouselPage from '../pages/CarouselPage';
+import UserManagePage from '../pages/UserManagePage';
 
 const { Sider } = Layout;
 const { SubMenu } = Menu;
@@ -37,8 +38,12 @@ const menuData = [
         text: '教学科研'
       },
       {
-        path: '/list/kylw',
-        text: '科研论文'
+        path: '/list/xsyj',
+        text: '学术研究'
+      },
+      {
+        path: '/list/mtsd',
+        text: '媒体师大'
       }
     ],
   },
@@ -51,6 +56,11 @@ const menuData = [
     path: '/carousel',
     iconType: 'upload',
     text: '首页轮播',
+  },
+  {
+    path: '/user',
+    iconType: 'user',
+    text: '用户管理',
   }
 ];
 
@@ -95,13 +105,15 @@ export default class BasicLayout extends Component {
           />
           <Switch>
             <Route path="/" exact component={IndexPage} />
-            <Route path="/list/sdyw" render={() => <NewsPage listType='师大要闻' />} />
-            <Route path="/list/tzgg" render={() => <NewsPage listType='通知公告' />} />
-            <Route path="/list/djwh" render={() => <NewsPage listType='党建文化' />} />
-            <Route path="/list/jxky" render={() => <NewsPage listType='教学科研' />} />
-            <Route path="/list/kylw" render={() => <NewsPage listType='科研论文' />} />
-            <Route path="/add" component={AddArticlePage} />
-            <Route path="/carousel" component={HomeCarousel} />
+            <Route path="/list/sdyw" exact render={() => <NewsPage listType='师大要闻' />} />
+            <Route path="/list/tzgg" exact render={() => <NewsPage listType='通知公告' />} />
+            <Route path="/list/djwh" exact render={() => <NewsPage listType='党建文化' />} />
+            <Route path="/list/jxky" exact render={() => <NewsPage listType='教学科研' />} />
+            <Route path="/list/xsyj" exact render={() => <NewsPage listType='学术研究' />} />
+            <Route path="/list/mtsd" exact render={() => <NewsPage listType='媒体师大' />} />
+            <Route path="/user" exact component={UserManagePage} />
+            <Route path="/add" exact component={AddArticlePage} />
+            <Route path="/carousel" exact component={CarouselPage} />
             <Redirect to="/" />
           </Switch>
         </Layout>

@@ -7,7 +7,7 @@ import { baseURL } from '../utils/config';
 
 const { Content } = Layout;
 
-export default class HomeCarousel extends Component {
+export default class CarouselPage extends Component {
   state = {
     imgList: [],               // 轮播图片列表
     deleteList: [],            // 要删除的img_id列表
@@ -20,8 +20,8 @@ export default class HomeCarousel extends Component {
     this.getcarouse();
   };
   getcarouse = async () => {
-    try {
-      let r = await getcarouselFetch();
+    let r = await getcarouselFetch();
+    if (r.data.result === 1) {
       let { data } = r.data;
       console.log(data)
       let imgList = this.state.imgList;
@@ -34,7 +34,7 @@ export default class HomeCarousel extends Component {
         })
       });
       this.setState({ imgList });
-    } catch (err) { console.log(err) }
+    } else this.props.history.push('/login');
   }
   // 点击提交按钮上传图片
   hanleUpload = async () => {

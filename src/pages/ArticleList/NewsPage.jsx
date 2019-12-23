@@ -38,17 +38,17 @@ export default class NewsPage extends Component {
   };
   // 更新列表数据
   updateData = async (listType) => {
-    try {
-      let r = await selnewsFetch([{ key: 'type', value: listType }]);
+    let r = await selnewsFetch([{ key: 'type', value: listType }]);
+    if (r.data.result === 1) {
       let { data } = r.data;
       console.log(data)
       let dataSource = [];
-      data.forEach(v => {
-        v.key = v.news_id;
-        dataSource.push(v);
+      data.forEach(item => {
+        item.key = item.news_id;
+        dataSource.push(item);
       });
       this.setState({ data: dataSource });
-    } catch (err) { console.log(err) }
+    } else this.props.history.push('/login');
   };
   // 列表页面点击编辑某一文章，加载改文章数据，跳转到编辑页面
   handleClickEdit = async (record) => {
