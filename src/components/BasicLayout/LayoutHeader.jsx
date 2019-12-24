@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Layout, Icon, Avatar, Menu, Dropdown, message } from 'antd';
 import './LayoutHeader.css';
-import { authVerifyFetch } from '../../services/loginFetch';
+import { authVerifyFetch, outVerifyFetch } from '../../services/loginFetch';
 import { tokenKey } from '../../utils/config';
 
 const { Header } = Layout;
@@ -30,10 +30,14 @@ export default class LayoutHeader extends Component {
     }
   }
 
-  loginout = () => {
-    // TODO 发送退出登录请求
-    localStorage.removeItem(tokenKey);
-    this.props.history.push('/login');
+  loginout = async () => {
+    let r = await outVerifyFetch();
+    if (r.data.result === 1) {
+      this.props.history.push('/login');
+      message.success('退出成功！', 2);
+      localStorage.removeItem(tokenKey);
+    } else message.error('退出失败！', 2);
+    
   }
 
   render() {

@@ -12,7 +12,7 @@ export const authVerifyFetch = async () => {
   return r.data;
 }
 
-// const admin = async () => {
-//   let data = await axios.post('/signup', {id: '256', name: 'admin', college: 0, pwd: 'y', rpwd: 'y' });
-//   console.log(data)
-// }
+export const outVerifyFetch = async () => {
+  let r = await axios.get('/admin/login/out');
+  return r;
+}
