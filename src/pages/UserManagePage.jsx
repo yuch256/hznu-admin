@@ -4,6 +4,7 @@ import { Table, Divider, Popconfirm, message, Button } from 'antd';
 import { Modal, Form, Input, Icon, Select } from 'antd';
 
 import { getuserFetch, deleteuserFetch, adduserFetch } from '../services/userFetch';
+import { getallcollegeFetch } from '../services/collegeFetch';
 
 const { Content } = Layout;
 const { Column } = Table;
@@ -12,9 +13,10 @@ const { Option } = Select;
 class UserManagePage extends Component {
   state = {
     dataSource: [],
+    collegeList: [],    // 学院列表
     isEdit: false,
     modalVisible: false,  // model是否开启
-    confirmLoading: false,// 提交按钮是否转圈圈
+    loading: false,// 提交按钮是否转圈圈
   };
 
   async componentDidMount() {
@@ -28,6 +30,14 @@ class UserManagePage extends Component {
       });
       this.setState({ dataSource });
     } else this.props.history.push('/login');
+
+    this.getallcollege();
+  };
+  // 获取所有学院
+  getallcollege = async () => {
+    let r = await getallcollegeFetch();
+    console.log(r.data.data)
+    if (r.data.result === 1) this.setState({ collegeList: r.data.data });
   };
   // 点击删除用户按钮
   handleClickDelete = async (record) => {
@@ -43,15 +53,17 @@ class UserManagePage extends Component {
     this.props.form.validateFields(async (err, values) => {
       console.log(values);
       if (!err) {
+        this.setState({ loading: true });
         let r = await adduserFetch(values);
         if (r.data.result === 1) message.success(r.data.msg, 2);
         else message.error(r.data.msg, 2);
       } else message.error('提交失败！');
+      this.setState({ loading: false });
     });
   };
 
   render() {
-    let { dataSource } = this.state;
+    let { dataSource, loading, collegeList } = this.state;
     const { getFieldDecorator } = this.props.form;
 
     return (
@@ -78,6 +90,8 @@ class UserManagePage extends Component {
             <ModalContent
               getFieldDecorator={getFieldDecorator}
               handleSubmit={this.handleSubmitAddUser}
+              loading={loading}
+              collegeList={collegeList}
             />
           </Modal>
         </div>
@@ -87,8 +101,7 @@ class UserManagePage extends Component {
 }
 
 function ModalContent(props) {
-  let { getFieldDecorator } = props;
-  const selectData = ['杭州国际服务工程学院'];
+  let { getFieldDecorator, loading, collegeList } = props;
 
   return (
     <Form
@@ -123,13 +136,13 @@ function ModalContent(props) {
         )}
       </Form.Item>
       <Form.Item label='College'>
-        {getFieldDecorator('college_name', {
+        {getFieldDecorator('college_id', {
           rules: [{ require: true, message: '请选择学院！' }],
         })(
           <Select placeholder='选择学院'>
             {
-              selectData.map(value => {
-                return <Option key={value}>{value}</Option>
+              collegeList.map(item => {
+                return <Option key={item.college_id}>{item.college_name}</Option>
               })
             }
           </Select>
@@ -148,7 +161,7 @@ function ModalContent(props) {
         )}
       </Form.Item>
       <Form.Item wrapperCol={{ span: 1, offset: 4 }}>
-        <Button type='primary' htmlType="submit">提交</Button>
+        <Button type='primary' htmlType="submit" loading={loading}>提交</Button>
       </Form.Item>
     </Form>
   )

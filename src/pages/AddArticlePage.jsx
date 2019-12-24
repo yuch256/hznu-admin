@@ -96,7 +96,10 @@ export default class AddArticle extends Component {
             />
           </div>
           <h5 className='output-title'>输出内容</h5>
-          <div className="output-content">{outputHTML}</div>
+          <div
+            className="output-content"
+            dangerouslySetInnerHTML={{ __html: outputHTML }}
+          />
         </div>
 
         <Modal

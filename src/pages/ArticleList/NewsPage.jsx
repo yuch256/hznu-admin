@@ -4,8 +4,10 @@ import { Route } from 'react-router-dom';
 import BraftEditor from 'braft-editor';
 
 import { selnewsFetch, updatenewsFetch, deletenewsFetch } from '../../services/newsFetch';
+import { getcommentFetch, deletecommentFetch } from '../../services/commentFetch';
 import ArticleTitleComp from '../../components/common/ArticleTitleComp';
 import ArticleTypeSelect from '../../components/common/ArticleTypeSelect';
+import ArticleCommont from '../../components/ArticleList/ArticleComment';
 
 const { Content } = Layout;
 const { Column } = Table;
@@ -15,6 +17,7 @@ export default class NewsPage extends Component {
   state = {
     // 列表页面
     data: [],          // 列表数据
+    commentData: [],   // 评论数据
     isEdit: false,     // 是否进入编辑页面
     // 编辑页面
     editorState: BraftEditor.createEditorState(initEditor),     // 文章内容的值
@@ -63,6 +66,15 @@ export default class NewsPage extends Component {
       outputHTML: data[0].news_content,
       news_id: data[0].news_id,
     });
+
+    this.loadCommont(record);
+  };
+  // 加载评论
+  loadCommont = async (record) => {
+    let r = await getcommentFetch({ news_id: record.news_id });
+    let { data } = r.data;
+    console.log(data)
+    this.setState({ commentData: data });
   };
   // 点击删除文章
   handleClickDelete = async (record) => {
@@ -73,6 +85,16 @@ export default class NewsPage extends Component {
       message.success(r.data.msg, 2);
     } else message.error(r.data.msg, 2);
   }
+  // 点击删除评论
+  handleClickDeleteCommont = async (item) => {
+    let r = await deletecommentFetch({ comment_id: item.comment_id });
+    console.log(r)
+    if (r.data.result === 1) {
+      const commentData = [...this.state.commentData];
+      this.setState({ commentData: commentData.filter(i => i.comment_id !== item.comment_id) });
+      message.success(r.data.msg, 2);
+    } else message.error(r.data.msg, 2);
+  };
   // 编辑页面点击返回
   handleClickBack = () => {
     this.setState({ isEdit: false });
@@ -118,7 +140,7 @@ export default class NewsPage extends Component {
   };
 
   render() {
-    let { data, iseditortitle, editorState, title, type, outputHTML } = this.state;
+    let { data, commentData, iseditortitle, editorState, title, type, outputHTML } = this.state;
 
     return (
       <Content style={{ margin: '0 16px' }}>
@@ -151,14 +173,24 @@ export default class NewsPage extends Component {
                       <Button className='btn-primary' icon='rollback' onClick={this.handleClickBack}>返回</Button>
                     </div>
                   </div>
+                  {/* 富文本框 */}
                   <div className="editor-wrapper">
                     <BraftEditor
                       value={editorState}
                       onChange={this.handleChangeEditor}
                     />
                   </div>
-                  <h5 className='output-title'>输出内容</h5>
-                  <div className="output-content">{outputHTML}</div>
+                  {/* 预览框 */}
+                  <h5 className='output-title'>预览</h5>
+                  <div
+                    className="output-content"
+                    dangerouslySetInnerHTML={{ __html: outputHTML }}
+                  />
+                  {/* 评论管理 */}
+                  <ArticleCommont
+                    data={commentData}
+                    handleDelete={this.handleClickDeleteCommont}
+                  />
                 </div>
               )
               : (
