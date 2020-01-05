@@ -33,7 +33,7 @@ export default class CarouselPage extends Component {
           url: `${baseURL}/${value.path}`
         })
       });
-      this.setState({ imgList });
+      this.setState({ imgList }, () => console.log(this.state.imgList));
     } else this.props.history.push('/login');
   }
   // 点击提交按钮上传图片
@@ -54,7 +54,7 @@ export default class CarouselPage extends Component {
       message.success(r.data.msg, 2) :
       message.error(r.data.msg, 2);
     this.setState({ uploading: false, deleteList: [] });
-    // TODO 刷新页面
+    // 更新状态
     this.getcarouse();
   };
   // 返回false则停止自动上传
@@ -77,7 +77,7 @@ export default class CarouselPage extends Component {
   };
 
   render() {
-    let { previewImage, previewVisible } = this.state;
+    let { previewImage, previewVisible, imgList } = this.state;
 
     return (
       <Content style={{ margin: '0 16px' }}>
@@ -86,10 +86,10 @@ export default class CarouselPage extends Component {
         </Breadcrumb>
         <div className='container clearfix'>
           <Upload
-            imgList       // 已经选中的文件列表
-            defaultFileList={this.state.imgList}
+            fileList={imgList}
             beforeUpload={this.handleBeforeInvoUpload}    // 添加图片时触发
             onRemove={file => this.setState(state => {    // 删除
+              console.log(file)
               return {
                 imgList: onRemoveState(state, file),
                 deleteList: [...state.deleteList, file.uid]
@@ -137,7 +137,6 @@ function onRemoveState(state, file) {
   const index = state.imgList.indexOf(file);
   const newFileList = state.imgList.slice();
   newFileList.splice(index, 1);
-  console.log(newFileList)
   return newFileList;
 }
 // 图片解析为base64编码

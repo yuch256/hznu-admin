@@ -16,6 +16,7 @@ class LoginPage extends React.Component {
     let t = localStorage.getItem(tokenKey);
 
     if (t) {
+      console.log(t)
       try {
         let data = await authVerifyFetch();
         console.log('login' + JSON.stringify(data))
