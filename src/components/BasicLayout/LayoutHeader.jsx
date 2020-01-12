@@ -16,7 +16,6 @@ export default class LayoutHeader extends Component {
         console.log('header' + JSON.stringify(data))
         if (data.result === 1) {
           this.props.getUsername(data.user_name);
-          message.success(data.msg, 2);
         } else {
           this.props.history.push('/login');
           message.error(data.msg, 2);
@@ -31,13 +30,12 @@ export default class LayoutHeader extends Component {
   }
 
   loginout = async () => {
-    let r = await outVerifyFetch();
-    if (r.data.result === 1) {
+    let data = await outVerifyFetch();
+    if (data.result === 1) {
       this.props.history.push('/login');
       message.success('退出成功！', 2);
       localStorage.removeItem(tokenKey);
-    } else message.error('退出失败！', 2);
-    
+    }
   }
 
   render() {

@@ -1,19 +1,20 @@
 import React, { Component } from 'react';
-import { Layout, Breadcrumb, Table, Divider, message, Button, Modal, Popconfirm } from 'antd';
-import { Route } from 'react-router-dom';
+import { Layout, Breadcrumb } from 'antd';
+import { Table, Divider, message, Button, Modal, Popconfirm, Spin } from 'antd';
+import { Route, withRouter } from 'react-router-dom';
 import BraftEditor from 'braft-editor';
 
 import { selnewsFetch, updatenewsFetch, deletenewsFetch } from '../../services/newsFetch';
 import { getcommentFetch, deletecommentFetch } from '../../services/commentFetch';
 import ArticleTitleComp from '../../components/common/ArticleTitleComp';
 import ArticleTypeSelect from '../../components/common/ArticleTypeSelect';
-import ArticleCommont from '../../components/ArticleList/ArticleComment';
+import ArticleComment from '../../components/ArticleList/ArticleComment';
 
 const { Content } = Layout;
 const { Column } = Table;
 const initEditor = '';
 
-export default class NewsPage extends Component {
+class NewsPage extends Component {
   state = {
     // 列表页面
     data: [],          // 列表数据
@@ -30,6 +31,7 @@ export default class NewsPage extends Component {
     confirmLoading: false,    // 按钮是否转圈圈
     modalVisible: false,      // modal是否开启
     // listType: null,           // 导航栏文章列表选项
+    spinLoading: true,       // 显示骨架屏
   };
   // 用这个，点击导航栏组件就能更新了
   componentWillReceiveProps(nextProps) {
@@ -42,22 +44,19 @@ export default class NewsPage extends Component {
   // 更新列表数据
   updateData = async (listType) => {
     let r = await selnewsFetch([{ key: 'type', value: listType }]);
-    if (r.data.result === 1) {
-      let { data } = r.data;
-      console.log(data)
-      let dataSource = [];
-      data.forEach(item => {
-        item.key = item.news_id;
-        dataSource.push(item);
-      });
-      this.setState({ data: dataSource });
-    } else this.props.history.push('/login');
+    let { data } = r;
+    console.log(data)
+    let dataSource = [];
+    data.forEach(item => {
+      item.key = item.news_id;
+      dataSource.push(item);
+    });
+    this.setState({ data: dataSource, spinLoading: false });
   };
   // 列表页面点击编辑某一文章，加载改文章数据，跳转到编辑页面
   handleClickEdit = async (record) => {
     let r = await selnewsFetch([{ key: 'news_id', value: record.news_id }]);
-    let { data } = r.data;
-    console.log('这是你正在编辑的文章：' + JSON.stringify(data))
+    let { data } = r;
     this.setState({
       isEdit: true,
       title: data[0].news_name,
@@ -67,16 +66,18 @@ export default class NewsPage extends Component {
       news_id: data[0].news_id,
     });
 
-    this.loadCommont(record);
+    // this.loadCommont();
   };
   // 加载评论
-  loadCommont = async (record) => {
-    let r = await getcommentFetch({ news_id: record.news_id });
+  loadCommont = async (end, newEnd) => {
+    let { news_id } = this.state;
+
+    let r = await getcommentFetch({ news_id, end, newEnd });
     let { data } = r.data;
     console.log(data)
     this.setState({ commentData: data });
   };
-  // 点击删除文章
+  // 点击删除文章 // TODO 删除文章时后端一并删除相关评论
   handleClickDelete = async (record) => {
     let r = await deletenewsFetch({ news_id: record.news_id });
     if (r.data.result === 1) {
@@ -141,6 +142,7 @@ export default class NewsPage extends Component {
 
   render() {
     let { data, commentData, iseditortitle, editorState, title, type, outputHTML } = this.state;
+    let { spinLoading, news_id } = this.state;
 
     return (
       <Content style={{ margin: '0 16px' }}>
@@ -152,7 +154,7 @@ export default class NewsPage extends Component {
           <Route render={() => {
             return this.state.isEdit
               ? (
-                <div>
+                <>
                   <div className='add-header'>
                     <div>
                       <ArticleTitleComp
@@ -187,18 +189,30 @@ export default class NewsPage extends Component {
                     dangerouslySetInnerHTML={{ __html: outputHTML }}
                   />
                   {/* 评论管理 */}
-                  <ArticleCommont
+                  <ArticleComment
                     data={commentData}
+                    // loadCommont={this.loadCommont}
+                    news_id={news_id}
                     handleDelete={this.handleClickDeleteCommont}
                   />
-                </div>
+                </>
               )
               : (
-                <TableList
-                  data={data}
-                  handleClickEdit={this.handleClickEdit}
-                  handleClickDelete={this.handleClickDelete}
-                />
+                <>
+                  {
+                    spinLoading ?
+                      (
+                        <div style={{ minHeight: '360px', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                          <Spin size='large' />
+                        </div>
+                      ) :
+                      <TableList
+                        data={data}
+                        handleClickEdit={this.handleClickEdit}
+                        handleClickDelete={this.handleClickDelete}
+                      />
+                  }
+                </>
               )
           }} />
         </div>
@@ -219,6 +233,9 @@ export default class NewsPage extends Component {
     )
   }
 }
+
+// withRouter，解决this.props.history.push中undefined问题
+export default withRouter(NewsPage);
 
 function TableList(props) {
   return (

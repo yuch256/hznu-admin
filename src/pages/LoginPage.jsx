@@ -13,19 +13,14 @@ class LoginPage extends React.Component {
 
   async componentDidMount() {
     // 身份认证，成功则跳转到首页
-    let t = localStorage.getItem(tokenKey);
-
-    if (t) {
-      console.log(t)
-      try {
-        let data = await authVerifyFetch();
-        console.log('login' + JSON.stringify(data))
-        if (data.result) {
-          this.props.history.push('/');
-        }
-      } catch (err) {
-        console.log(err)
+    try {
+      let data = await authVerifyFetch();
+      console.log('login' + JSON.stringify(data))
+      if (data.result) {
+        this.props.history.push('/');
       }
+    } catch (err) {
+      console.log(err)
     }
   }
 
@@ -38,11 +33,8 @@ class LoginPage extends React.Component {
     };
     let { result, msg, token } = await loginVerifyFetch(data);
 
-    if (result === 1) {
-      localStorage.setItem(tokenKey, token);
-      message.success(msg, 2);
-      this.props.history.push('/');
-    } else message.error(msg, 2);
+    localStorage.setItem(tokenKey, token);
+    this.props.history.push('/');
   }
 
   render() {
